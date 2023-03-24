@@ -52,7 +52,7 @@ jobs:
         run: $BUILD_CMD build --locked --release --target=${{ matrix.job.target }}
       - name: copy to dist (not windows)
         shell: bash
-        if: matrix.job.os != "windows-2019"
+        if: matrix.job.os != 'windows-2019'
         run: |
           mkdir dist
           cp LICENSE dist/
@@ -63,7 +63,7 @@ jobs:
           zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
       - name: copy to dist (windows)
         shell: bash
-        if: matrix.job.os == "windows-2019"
+        if: matrix.job.os == 'windows-2019'
         run: |
           mkdir dist
           cp LICENSE dist/
