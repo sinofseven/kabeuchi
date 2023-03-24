@@ -50,8 +50,9 @@ jobs:
       - name: Build
         shell: bash
         run: $BUILD_CMD build --locked --release --target=${{ matrix.job.target }}
-      - name: copy to dist
+      - name: copy to dist (not windows)
         shell: bash
+        if: matrix.job.os != "windows-2019"
         run: |
           mkdir dist
           cp LICENSE dist/
@@ -60,6 +61,17 @@ jobs:
           cp target/${{ matrix.job.target }}/release/kabeuchi dist/
           cd dist
           zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
+      - name: copy to dist (windows)
+        shell: bash
+        if: matrix.job.os == "windows-2019"
+        run: |
+          mkdir dist
+          cp LICENSE dist/
+          cp CREDITS.yaml dist/
+          cp README.md dist/
+          cp target/${{ matrix.job.target }}/release/kabeuchi.exe dist/
+          cd dist
+          powershell Compress-Archive -Path * -DestinationPath ../kabeuchi-${{ matrix.job.target }}.zip
       - uses: actions/upload-artifact@v3
         with:
           path: kabeuchi-${{ matrix.job.target }}.zip
