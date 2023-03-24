@@ -57,7 +57,7 @@ jobs:
           cp LICENSE dist/
           cp CREDITS.yaml dist/
           cp README.md dist/
-          cp target/${{ matrix.job.target }}/kabeuchi dist/
+          cp target/${{ matrix.job.target }}/release/kabeuchi dist/
           cd dist
           zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
       - uses: actions/upload-artifact@v3
@@ -73,7 +73,8 @@ jobs:
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin
+          targets: x86_64-apple-darwin
+      - run: rustup target add aarch64-apple-darwin
       - run: cargo install cargo-zigbuild
       - run: cargo zigbuild --locked --release --target=aarch64-apple-darwin
       - run: |
@@ -81,7 +82,7 @@ jobs:
           cp LICENSE dist/
           cp CREDITS.yaml dist/
           cp README.md dist/
-          cp target/aarch64-apple-darwin/kabeuchi dist/
+          cp target/aarch64-apple-darwin/release/kabeuchi dist/
           cd dist
           zip -r ../kabeuchi-aarch64-apple-darwin.zip .
       - uses: actions/upload-artifact@v3
