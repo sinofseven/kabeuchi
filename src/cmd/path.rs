@@ -60,7 +60,7 @@ impl CommandDefinition for SubCmdConfigFile {
 }
 
 impl SubCmdPreMessagesDir {
-    const KEY_PROFILE_NAME: &'static str = "profile_name";
+    const KEY_PROFILE_NAME: &'static str = "profile";
 }
 
 impl CommandDefinition for SubCmdPreMessagesDir {
@@ -70,7 +70,7 @@ impl CommandDefinition for SubCmdPreMessagesDir {
         Command::new(Self::NAME)
             .about("show path of pre messages dir")
             .long_about("show path of pre messages direcotry (pre messages = Messages to be passed in advance when hitting ChatGPT)")
-            .arg(arg!(<PROFILE_NAME>).id(Self::KEY_PROFILE_NAME))
+            .arg(arg!(<PROFILE_NAME>).id(Self::KEY_PROFILE_NAME).long(Self::KEY_PROFILE_NAME).short('p').required(false))
     }
 
     fn run(args: &ArgMatches) -> Result<(), String> {
@@ -86,7 +86,7 @@ impl CommandDefinition for SubCmdPreMessagesDir {
 }
 
 impl SubCmdHistoryDir {
-    const KEY_PROFILE_NAME: &'static str = "profile_name";
+    const KEY_PROFILE_NAME: &'static str = "profile";
 }
 
 impl CommandDefinition for SubCmdHistoryDir {
@@ -95,7 +95,7 @@ impl CommandDefinition for SubCmdHistoryDir {
     fn command() -> Command {
         Command::new(Self::NAME)
             .about("show path of history dir")
-            .arg(arg!(<PROFILE_NAME>).id(Self::KEY_PROFILE_NAME))
+            .arg(arg!(<PROFILE_NAME>).id(Self::KEY_PROFILE_NAME).long(Self::KEY_PROFILE_NAME).short('p').required(false))
     }
 
     fn run(args: &ArgMatches) -> Result<(), String> {

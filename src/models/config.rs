@@ -117,6 +117,9 @@ impl Config {
 
     pub fn load() -> Result<Option<Config>, String> {
         let path = crate::path::get_path_config_file()?;
+        if !path.exists() {
+            return Ok(None);
+        }
         let text = crate::fs::load_text(&path)?;
         toml::from_str(&text).map_err(|e| {
             format!(

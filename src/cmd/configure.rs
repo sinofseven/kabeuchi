@@ -5,7 +5,7 @@ use clap::{arg, ArgMatches, Command};
 use std::fmt::Display;
 use std::str::FromStr;
 
-pub struct CmdConfigure;
+pub struct  CmdConfigure;
 
 impl CmdConfigure {
     const ID_PROFILE: &str = "profile";
@@ -54,11 +54,7 @@ impl CommandDefinition for CmdConfigure {
         };
 
         println!("profile name: {profile_name}");
-        let (source_profile, token) =
-            get_token_or_source_profile(&profile.source_profile, &profile.token)?;
-        profile.source_profile = source_profile;
-        profile.token = token;
-
+        profile.token = input_str_with_null_and_default("OpenAI API key", &profile.token, true)?;
         profile.organization_id = input_str_with_null_and_default(
             "OpenAI Organization ID",
             &profile.organization_id,
@@ -127,27 +123,11 @@ fn input_str_with_null_and_default<T: Display>(
     Ok(value)
 }
 
-fn get_token_or_source_profile(
-    default_source_profile: &Option<String>,
-    default_token: &Option<String>,
-) -> Result<(Option<String>, Option<String>), String> {
-    let source_profile =
-        input_str_with_null_and_default("source profile", default_source_profile, false)?;
-    let token = input_str_with_null_and_default("OpenAI API key", default_token, true)?;
-
-    if source_profile.is_none() && token.is_none() {
-        println!("\nBoth source profile name and OpenAI API key cannot be blank.\n");
-        get_token_or_source_profile(default_source_profile, default_token)
-    } else {
-        Ok((source_profile, token))
-    }
-}
-
 fn input_use_history(default_flag: &Option<bool>) -> Result<Option<bool>, String> {
     let default_flag = default_flag.unwrap_or(true);
     let choices = if default_flag { "[Y/n]" } else { "[y/N]" };
 
-    let result = get_confirm(format!("use history {choices}"), default_flag)?;
+    let result = get_confirm(format!("use history {choices}: "), default_flag)?;
     if result.is_some() {
         Ok(result)
     } else {

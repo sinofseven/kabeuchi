@@ -2,11 +2,9 @@ name: build
 
 on:
   push:
-    branches:
-      - master
 
 jobs:
-  # Referring to A https://github.com/sharkdp/bat/blob/master/.github/workflows/CICD.yml
+  # Referring to https://github.com/sharkdp/bat/blob/master/.github/workflows/CICD.yml
   build:
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
