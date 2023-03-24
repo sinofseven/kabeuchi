@@ -51,3 +51,41 @@ jobs:
       - name: Build
         shell: bash
         run: $BUILD_CMD build --locked --release --target=${{ matrix.job.target }}
+      - name: copy to dist
+        shell: bash
+        run: |
+          mkdir dist
+          cp LICENSE dist/
+          cp CREDITS.yaml dist/
+          cp README.md dist/
+          cp target/${{ matrix.job.target }}/kabeuchi dist/
+          cd dist
+          zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
+      - uses: actions/upload-artifact
+        with:
+          path: kabeuchi-${{ matrix.job.target }}.zip
+
+  m1-build:
+    name: aarch64-apple-darwin (macos-10.15)
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v3
+      - run: brew install zig
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - run: cargo install cargo-zigbuild
+      - run: cargo zigbuild --locked --release --target=aarch64-apple-darwin
+      - run: |
+          mkdir dist
+          cp LICENSE dist/
+          cp CREDITS.yaml dist/
+          cp README.md dist/
+          cp target/aarch64-apple-darwin/kabeuchi dist/
+          cd dist
+          zip -r ../kabeuchi-aarch64-apple-darwin.zip .
+      - uses: actions/upload-artifact
+        with:
+          path: kabeuchi-aarch64-apple-darwin.zip
+
