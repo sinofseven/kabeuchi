@@ -61,7 +61,7 @@ jobs:
           cp target/${{ matrix.job.target }}/kabeuchi dist/
           cd dist
           zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
-      - uses: actions/upload-artifact
+      - uses: actions/upload-artifact@v3
         with:
           path: kabeuchi-${{ matrix.job.target }}.zip
 
@@ -85,7 +85,7 @@ jobs:
           cp target/aarch64-apple-darwin/kabeuchi dist/
           cd dist
           zip -r ../kabeuchi-aarch64-apple-darwin.zip .
-      - uses: actions/upload-artifact
+      - uses: actions/upload-artifact@v3
         with:
           path: kabeuchi-aarch64-apple-darwin.zip
 
