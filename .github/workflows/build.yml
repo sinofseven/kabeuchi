@@ -66,14 +66,12 @@ jobs:
 
   m1-build:
     name: aarch64-apple-darwin (macos-10.15)
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: brew install zig
+      - run: snap install zig --classic --beta
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-apple-darwin
       - run: rustup target add aarch64-apple-darwin
       - run: cargo install cargo-zigbuild
       - run: cargo zigbuild --locked --release --target=aarch64-apple-darwin
