@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: snap install zig --classic --beta
+      - run: sudo snap install zig --classic --beta
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
       - run: rustup target add aarch64-apple-darwin
