@@ -66,11 +66,13 @@ jobs:
 
   m1-build:
     name: aarch64-apple-darwin (macos-10.15)
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - run: sudo apt-get update && sudo apt-get -y install gcc-aarch64-linux-gnu
-      - run: pip3 install ziglang
+      - run: |
+          sudo xcode-select -s "/Applications/Xcode_12.3.app"
+          sudo rm -Rf /Library/Developer/CommandLineTools/SDKs/*
+      - run: brew install zig
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
       - run: rustup target add aarch64-apple-darwin
