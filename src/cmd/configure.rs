@@ -40,7 +40,7 @@ impl CommandDefinition for CmdConfigure {
             Profile {
                 name: profile_name.to_string(),
                 source_profile: None,
-                token: None,
+                api_key: None,
                 organization_id: None,
                 use_history: None,
                 model: None,
@@ -54,7 +54,7 @@ impl CommandDefinition for CmdConfigure {
         };
 
         println!("profile name: {profile_name}");
-        profile.token = input_str_with_null_and_default("OpenAI API key", &profile.token, true)?;
+        profile.api_key = input_str_with_null_and_default("OpenAI API key", &profile.api_key, true)?;
         profile.organization_id = input_str_with_null_and_default(
             "OpenAI Organization ID",
             &profile.organization_id,

@@ -8,7 +8,7 @@ pub struct Profile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_profile: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub token: Option<String>,
+    pub api_key: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub organization_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -35,8 +35,8 @@ pub struct Profile {
 
 impl Profile {
     fn merge(&mut self, profile: &Profile) {
-        if self.token.is_none() && profile.token.is_some() {
-            self.token = profile.token.clone();
+        if self.api_key.is_none() && profile.api_key.is_some() {
+            self.api_key = profile.api_key.clone();
         }
 
         if self.use_history.is_none() && profile.use_history.is_some() {
@@ -75,7 +75,7 @@ impl Profile {
     pub fn resolve(&self, list: &[Profile]) -> Result<Profile, String> {
         let mut result = self.clone();
 
-        if self.token.is_none() && self.source_profile.is_none() {
+        if self.api_key.is_none() && self.source_profile.is_none() {
             return Err("no exists, token or source_profile".to_string());
         }
 
@@ -94,7 +94,7 @@ impl Profile {
                 }
             }
 
-            if result.token.is_none() {
+            if result.api_key.is_none() {
                 return Err("no token after resolving source profile".to_string());
             }
         }
