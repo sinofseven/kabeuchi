@@ -31,7 +31,7 @@ jobs:
         if: matrix.job.target == 'aarch64-apple-darwin'
       - run: cargo zigbuild --release --target=${{ matrix.job.target }}
         if: matrix.job.target == 'aarch64-apple-darwin'
-      - run: cargo zigbuild --release --target=${{ matrix.job.target }}
+      - run: cargo build --release --target=${{ matrix.job.target }}
         if: matrix.job.target == 'x86_64-apple-darwin'
       - uses: actions/upload-artifact@v3
         with:
