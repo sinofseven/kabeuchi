@@ -6,7 +6,7 @@ on:
 jobs:
   # Referring to https://github.com/sharkdp/bat/blob/master/.github/workflows/CICD.yml
   build-on-mac:
-    name: ${{ matrix.job.target }} (macos-12)
+    name: build (macos-12, ${{ matrix.job.target }})
     runs-on: macos-12
     strategy:
       fail-fast: false
@@ -28,7 +28,7 @@ jobs:
           path: target/${{ matrix.job.target }}/release/kabeuchi
 
   build-on-ubuntu:
-    name: ${{ matrix.job.target }} (ubuntu-22.04)
+    name: build (ubuntu-22.04, ${{ matrix.job.target }})
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -61,7 +61,7 @@ jobs:
           path: target/${{ matrix.job.target }}/release/kabeuchi
 
   build-on-windows:
-    name: ${{ matrix.job.target }} (windows-2022)
+    name: build (windows-2022, ${{ matrix.job.target }})
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -106,8 +106,27 @@ jobs:
           - target: x86_64-pc-windows-gnu
           - target: x86_64-pc-windows-msvc
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: binary-${{ matrix.job.target }}
           path: binary-${{ matrix.job.target }}
+      - run: |
+          mkdir dist
+          cp binary-${{ matrix.job.target }}/* dist/
+          cp CREDITS.yaml dist/
+          cp LICENSE dist/
+          cp README.md dist/
+          cd dist
+          zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
+      - uses: actions/upload-artifact@v3
+        with:
+          path: kabeuchi-${{ matrix.job.target }}.zip
+
+  draft-release:
+    name: draft-release
+    runs-on: ubuntu-22.04
+    needs: package
+    steps:
+      - uses: actions/download-artifact@v3
       - run: find . -type f | sort
