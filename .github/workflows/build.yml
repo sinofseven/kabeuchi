@@ -99,3 +99,35 @@ jobs:
         with:
           path: kabeuchi-aarch64-apple-darwin.zip
 
+  m1-build-on-ubuntu:
+    name: ${{ matrix.job.target }} (ubuntu-22.04)
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - target: aarch64-apple-darwin
+          - target: aarch64-unknown-linux-gnu
+          - target: arm-unknown-linux-gnueabihf
+          - target: arm-unknown-linux-musleabihf
+          - target: i686-pc-windows-msvc
+          - target: i686-unknown-linux-gnu
+          - target: i686-unknown-linux-musl
+          - target: x86_64-apple-darwin
+          - target: x86_64-pc-windows-gnu
+          - target: x86_64-pc-windows-msvc
+          - target: x86_64-unknown-linux-gnu
+          - target: x86_64-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install prerequistites
+        shell: bash
+        run: |
+          case ${{ matrix.job.target }} in
+            arm-unknown-linux-*) sudo apt-get -y update ; sudo apt-get -y install gcc-arm-linux-gnueabihf ;;
+            aarch64-unknown-linux-gnu) sudo apt-get -y update ; sudo apt-get -y install gcc-aarch64-linux-gnu ;;
+          esac
+      - run: sudo snap install zig --classic --beta
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup target add ${{ matrix.job.target }}
+      - run: cargo zigbuild --release --target=${{ matrix.job.target }}
