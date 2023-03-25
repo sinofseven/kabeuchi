@@ -5,119 +5,42 @@ on:
 
 jobs:
   # Referring to https://github.com/sharkdp/bat/blob/master/.github/workflows/CICD.yml
-  build:
-    name: ${{ matrix.job.target }} (${{ matrix.job.os }})
-    runs-on: ${{ matrix.job.os }}
-    env:
-      BUILD_CMD: cargo
+  build-on-mac:
+    name: aarch64-apple-darwin (macos-12)
+    runs-on: macos-12
     strategy:
       fail-fast: false
       matrix:
         job:
-          - { target: aarch64-unknown-linux-gnu   , os: ubuntu-20.04, use-cross: true }
-          - { target: arm-unknown-linux-gnueabihf , os: ubuntu-20.04, use-cross: true }
-          - { target: arm-unknown-linux-musleabihf, os: ubuntu-20.04, use-cross: true }
-          - { target: i686-pc-windows-msvc        , os: windows-2019                  }
-          - { target: i686-unknown-linux-gnu      , os: ubuntu-20.04, use-cross: true }
-          - { target: i686-unknown-linux-musl     , os: ubuntu-20.04, use-cross: true }
-          - { target: x86_64-apple-darwin         , os: macos-10.15                   }
-          - { target: x86_64-pc-windows-gnu       , os: windows-2019                  }
-          - { target: x86_64-pc-windows-msvc      , os: windows-2019                  }
-          - { target: x86_64-unknown-linux-gnu    , os: ubuntu-20.04, use-cross: true }
-          - { target: x86_64-unknown-linux-musl   , os: ubuntu-20.04, use-cross: true }
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install prerequistites
-        shell: bash
-        run: |
-          case ${{ matrix.job.target }} in
-            arm-unknown-linux-*) sudo apt-get -y update ; sudo apt-get -y install gcc-arm-linux-gnueabihf ;;
-            aarch64-unknown-linux-gnu) sudo apt-get -y update ; sudo apt-get -y install gcc-aarch64-linux-gnu ;;
-          esac
-      - name: Install Rust Toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.job.target }}
-      - name: Install cross
-        if: matrix.job.use-cross
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cross
-      - name: Overwrite build command
-        if: matrix.job.use-cross
-        shell: bash
-        run: echo "BUILD_CMD=cross" >> $GITHUB_ENV
-      - name: Build
-        shell: bash
-        run: $BUILD_CMD build --locked --release --target=${{ matrix.job.target }}
-      - name: copy to dist (not windows)
-        shell: bash
-        if: matrix.job.os != 'windows-2019'
-        run: |
-          mkdir dist
-          cp LICENSE dist/
-          cp CREDITS.yaml dist/
-          cp README.md dist/
-          cp target/${{ matrix.job.target }}/release/kabeuchi dist/
-          cd dist
-          zip -r ../kabeuchi-${{ matrix.job.target }}.zip .
-      - name: copy to dist (windows)
-        shell: bash
-        if: matrix.job.os == 'windows-2019'
-        run: |
-          mkdir dist
-          cp LICENSE dist/
-          cp CREDITS.yaml dist/
-          cp README.md dist/
-          cp target/${{ matrix.job.target }}/release/kabeuchi.exe dist/
-          cd dist
-          powershell Compress-Archive -Path * -DestinationPath ../kabeuchi-${{ matrix.job.target }}.zip
-      - uses: actions/upload-artifact@v3
-        with:
-          path: kabeuchi-${{ matrix.job.target }}.zip
-
-  m1-build:
-    name: aarch64-apple-darwin (macos-10.15)
-    runs-on: macos-latest
+          - target: aarch64-apple-darwin
+          - target: x86_64-apple-darwin
     steps:
       - uses: actions/checkout@v3
       - run: brew install zig
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
-      - run: rustup target add aarch64-apple-darwin
+      - run: rustup target add ${{ matrix.job.target }}
       - run: cargo install cargo-zigbuild
-      - run: cargo zigbuild --release --target=aarch64-apple-darwin
-      - run: |
-          mkdir dist
-          cp LICENSE dist/
-          cp CREDITS.yaml dist/
-          cp README.md dist/
-          cp target/aarch64-apple-darwin/release/kabeuchi dist/
-          cd dist
-          zip -r ../kabeuchi-aarch64-apple-darwin.zip .
+      - run: cargo zigbuild --release --target=${{ matrix.job.target }}
       - uses: actions/upload-artifact@v3
         with:
-          path: kabeuchi-aarch64-apple-darwin.zip
+          name: binary-${{ matrix.job.target }}
+          path: target/${{ matrix.job.target }}/release/kabeuchi
 
-  m1-build-on-ubuntu:
+  build-on-ubuntu:
     name: ${{ matrix.job.target }} (ubuntu-22.04)
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         job:
-          - target: aarch64-apple-darwin
           - target: aarch64-unknown-linux-gnu
           - target: arm-unknown-linux-gnueabihf
           - target: arm-unknown-linux-musleabihf
-          - target: i686-pc-windows-msvc
           - target: i686-unknown-linux-gnu
           - target: i686-unknown-linux-musl
-          - target: x86_64-apple-darwin
           - target: x86_64-pc-windows-gnu
           - target: x86_64-pc-windows-msvc
-          - target: x86_64-unknown-linux-gnu
-          - target: x86_64-unknown-linux-musl
     steps:
       - uses: actions/checkout@v3
       - name: Install prerequistites
@@ -132,3 +55,29 @@ jobs:
       - run: rustup target add ${{ matrix.job.target }}
       - run: cargo install cargo-zigbuild
       - run: cargo zigbuild --release --target=${{ matrix.job.target }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: binary-${{ matrix.job.target }}
+          path: target/${{ matrix.job.target }}/release/kabeuchi
+
+  build-on-windows:
+    name: ${{ matrix.job.target }} (windows-2022)
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - target: i686-pc-windows-msvc
+          - target: x86_64-pc-windows-gnu
+          - target: x86_64-pc-windows-msvc
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.job.target }}
+      - run: cargo build --release --target=${{ matrix.job.target }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: binary-${{ matrix.job.target }}
+          path: target/${{ matrix.job.target }}/release/kabeuchi.exe
