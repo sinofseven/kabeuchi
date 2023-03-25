@@ -130,4 +130,5 @@ jobs:
       - run: sudo snap install zig --classic --beta
       - uses: dtolnay/rust-toolchain@stable
       - run: rustup target add ${{ matrix.job.target }}
+      - run: cargo install cargo-zigbuild
       - run: cargo zigbuild --release --target=${{ matrix.job.target }}
