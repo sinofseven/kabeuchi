@@ -6,7 +6,7 @@ on:
 jobs:
   # Referring to https://github.com/sharkdp/bat/blob/master/.github/workflows/CICD.yml
   build-on-mac:
-    name: aarch64-apple-darwin (macos-12)
+    name: ${{ matrix.job.target }} (macos-12)
     runs-on: macos-12
     strategy:
       fail-fast: false
@@ -106,8 +106,8 @@ jobs:
           - target: x86_64-pc-windows-gnu
           - target: x86_64-pc-windows-msvc
     steps:
-      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: binary-${{ matrix.job.target }}
+          path: binary-${{ matrix.job.target }}
       - run: find . -type f | sort
