@@ -85,6 +85,10 @@ jobs:
   package:
     name: package
     runs-on: ubuntu-22.04
+    needs:
+      - build-on-mac
+      - build-on-ubuntu
+      - build-on-windows
     strategy:
       fail-fast: true
       matrix:
