@@ -21,7 +21,7 @@ pub fn get_path_profile_pre_messages_dir(profile_name: &str) -> Result<PathBuf, 
 }
 
 pub fn get_path_history_dir() -> Result<PathBuf, String> {
-    get_path_config_dir().map(|p| p.join("hiistory"))
+    get_path_config_dir().map(|p| p.join("history"))
 }
 
 pub fn get_path_profile_history_dir(profile_name: &str) -> Result<PathBuf, String> {
