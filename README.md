@@ -83,7 +83,7 @@ kabeuchiでも設定できるので、以下の設定にしてみました。
 これで叩くと次のようになります。
 
 ```
-$ kebeuchi prompt -p cla_cat -m 'AWS Lambdaについて教えてください'
+$ kebeuchi prompt -m 'AWS Lambdaについて教えてください'
 
 にゃ～ん♪AWS Lambdaはサーバーレスでコードを実行できるコンピューティングサービスですにゃ！
 
