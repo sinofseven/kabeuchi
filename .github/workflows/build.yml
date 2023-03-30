@@ -7,6 +7,9 @@ on:
     tags:
       - 'v[0-9]+\.[0-9]+\.[0-9]+'
 
+env:
+  RELEASE_FLAG: ""
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 # Referring to https://github.com/sharkdp/bat/blob/master/.github/workflows/CICD.yml
 
@@ -27,14 +30,20 @@ jobs:
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
       - run: rustup target add ${{ matrix.job.target }}
+      - name: fix flag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "RELEASE_FLAG=--release" >> $GITHUB_ENV
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: cargo-${{ runner.os }}-${{ matrix.job.target }}-${{ hashFiles('**/Cargo.lock') }}-${{ env.RELEASE_FLAG }}
       - run: cargo install cargo-zigbuild
         if: matrix.job.target == 'aarch64-apple-darwin'
       - name: zigbuild
         if: matrix.job.target == 'aarch64-apple-darwin'
-        run: cargo zigbuild --release --target=${{ matrix.job.target }}
+        run: cargo zigbuild --locked $RELEASE_FLAG --target=${{ matrix.job.target }}
       - name: build
         if: matrix.job.target == 'x86_64-apple-darwin'
-        run: cargo build --release --target=${{ matrix.job.target }}
+        run: cargo build --locked $RELEASE_FLAG --target=${{ matrix.job.target }}
       - uses: actions/upload-artifact@v3
         with:
           name: binary-${{ matrix.job.target }}
@@ -66,8 +75,14 @@ jobs:
       - run: sudo snap install zig --classic --beta
       - uses: dtolnay/rust-toolchain@stable
       - run: rustup target add ${{ matrix.job.target }}
+      - name: fix flag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "RELEASE_FLAG=--release" >> $GITHUB_ENV
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: cargo-${{ runner.os }}-${{ matrix.job.target }}-${{ hashFiles('**/Cargo.lock') }}-${{ env.RELEASE_FLAG }}
       - run: cargo install cargo-zigbuild
-      - run: cargo zigbuild --release --target=${{ matrix.job.target }}
+      - run: cargo zigbuild --locked $RELEASE_FLAG --target=${{ matrix.job.target }}
       - uses: actions/upload-artifact@v3
         with:
           name: binary-${{ matrix.job.target }}
@@ -89,7 +104,13 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.job.target }}
-      - run: cargo build --release --target=${{ matrix.job.target }}
+      - name: fix flag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "RELEASE_FLAG=--release" >> $GITHUB_ENV
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: cargo-${{ runner.os }}-${{ matrix.job.target }}-${{ hashFiles('**/Cargo.lock') }}-${{ env.RELEASE_FLAG }}
+      - run: cargo build --locked $RELEASE_FLAG --target=${{ matrix.job.target }}
       - uses: actions/upload-artifact@v3
         with:
           name: binary-${{ matrix.job.target }}
