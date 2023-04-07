@@ -95,7 +95,13 @@ impl CommandDefinition for SubCmdHistoryDir {
     fn command() -> Command {
         Command::new(Self::NAME)
             .about("show path of history dir")
-            .arg(arg!(<PROFILE_NAME>).id(Self::KEY_PROFILE_NAME).long(Self::KEY_PROFILE_NAME).short('p').required(false))
+            .arg(
+                arg!(<PROFILE_NAME>)
+                    .id(Self::KEY_PROFILE_NAME)
+                    .long(Self::KEY_PROFILE_NAME)
+                    .short('p')
+                    .required(false),
+            )
     }
 
     fn run(args: &ArgMatches) -> Result<(), String> {
