@@ -119,9 +119,7 @@ impl CommandDefinition for CmdPrompt {
             profile.user = Some(user.to_string());
         }
 
-        // crate::api::call_chat_completion(&profile, &message)?;
-
-        println!("{:?}", profile);
+        crate::api::call_chat_completion(&profile, &message)?;
 
         Ok(())
     }
