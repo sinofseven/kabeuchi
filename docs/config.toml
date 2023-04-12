@@ -1,0 +1,4 @@
+baseURL = 'https://sinofseven.github.io/kabeuchi/'
+languageCode = 'en-us'
+title = 'My New Hugo Site'
+theme = 'hugo-book'
