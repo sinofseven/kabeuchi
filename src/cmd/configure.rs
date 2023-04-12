@@ -5,7 +5,7 @@ use clap::{arg, ArgMatches, Command};
 use std::fmt::Display;
 use std::str::FromStr;
 
-pub struct  CmdConfigure;
+pub struct CmdConfigure;
 
 impl CmdConfigure {
     const ID_PROFILE: &str = "profile";
@@ -54,7 +54,8 @@ impl CommandDefinition for CmdConfigure {
         };
 
         println!("profile name: {profile_name}");
-        profile.api_key = input_str_with_null_and_default("OpenAI API key", &profile.api_key, true)?;
+        profile.api_key =
+            input_str_with_null_and_default("OpenAI API key", &profile.api_key, true)?;
         profile.organization_id = input_str_with_null_and_default(
             "OpenAI Organization ID",
             &profile.organization_id,
