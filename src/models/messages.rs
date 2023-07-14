@@ -16,12 +16,16 @@ pub struct RawSavedMessage {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub assistant: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user: Option<String>
+    pub user: Option<String>,
 }
 
 impl From<SavedMessage> for RawSavedMessage {
     fn from(value: SavedMessage) -> Self {
-        let mut result = RawSavedMessage { system: None, assistant: None, user: None };
+        let mut result = RawSavedMessage {
+            system: None,
+            assistant: None,
+            user: None,
+        };
 
         match value {
             SavedMessage::System(text) => result.system = Some(text),
@@ -41,7 +45,7 @@ impl TryFrom<RawSavedMessage> for SavedMessage {
             Ok(Self::System(text))
         } else if let Some(text) = value.assistant {
             Ok(Self::Assistant(text))
-        } else if let Some(text)  =value.user {
+        } else if let Some(text) = value.user {
             Ok(Self::User(text))
         } else {
             Err("no message".to_string())

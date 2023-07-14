@@ -1,6 +1,6 @@
 use crate::models::api::{Message, RequestChatCompletion, ResponseChatCompletion, Role};
 use crate::models::config::{Profile, DEFAULT_MODEL};
-use crate::models::messages::{SavedMessage, RawSavedMessage};
+use crate::models::messages::{RawSavedMessage, SavedMessage};
 use crate::path::{
     get_files_in_dir, get_path_profile_history_dir, get_path_profile_pre_messages_dir,
 };
@@ -37,13 +37,14 @@ fn get_pre_messages(profile_name: &str) -> Result<Vec<SavedMessage>, String> {
                 result.append(&mut pre_messages);
                 continue;
             } else if extension == "yaml" || extension == "yml" {
-                let raw_pre_messages: Vec<RawSavedMessage> = serde_yaml::from_str(&text).map_err(|e| {
-                    format!(
-                        "failed to deserialize yaml: path={}, err={}",
-                        path.display(),
-                        e
-                    )
-                })?;
+                let raw_pre_messages: Vec<RawSavedMessage> =
+                    serde_yaml::from_str(&text).map_err(|e| {
+                        format!(
+                            "failed to deserialize yaml: path={}, err={}",
+                            path.display(),
+                            e
+                        )
+                    })?;
                 for message in raw_pre_messages {
                     result.push(message.try_into()?);
                 }
@@ -105,8 +106,16 @@ fn save_history(
     let answer = response.get_assistant_message();
 
     let history: Vec<RawSavedMessage> = vec![
-        RawSavedMessage { system: None, assistant: None, user: Some(message.to_string())},
-        RawSavedMessage {system: None, assistant: Some(answer), user: None}
+        RawSavedMessage {
+            system: None,
+            assistant: None,
+            user: Some(message.to_string()),
+        },
+        RawSavedMessage {
+            system: None,
+            assistant: Some(answer),
+            user: None,
+        },
     ];
 
     let text =
