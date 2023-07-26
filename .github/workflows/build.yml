@@ -106,7 +106,7 @@ jobs:
           targets: ${{ matrix.job.target }}
       - name: fix flag
         if: startsWith(github.ref, 'refs/tags/')
-        run: echo "RELEASE_FLAG=--release" >> $GITHUB_ENV
+        run: echo "RELEASE_FLAG=--release" >> $env:GITHUB_ENV
       - uses: Swatinem/rust-cache@v2
         with:
           key: cargo-${{ runner.os }}-${{ matrix.job.target }}-${{ hashFiles('**/Cargo.lock') }}-${{ env.RELEASE_FLAG }}
