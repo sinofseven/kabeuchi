@@ -42,6 +42,7 @@ impl CommandDefinition for CmdConfigure {
                 source_profile: None,
                 api_key: None,
                 organization_id: None,
+                use_pre_messages: None,
                 use_history: None,
                 model: None,
                 temperature: None,
@@ -61,7 +62,8 @@ impl CommandDefinition for CmdConfigure {
             &profile.organization_id,
             true,
         )?;
-        profile.use_history = input_use_history(&profile.use_history)?;
+        profile.use_pre_messages = input_flag(profile.get_use_pre_messages(), "use pre messages")?;
+        profile.use_history = input_flag(profile.get_use_history(), "use history")?;
 
         let default_model = if let Some(model) = &profile.model {
             Some(model.to_string())
@@ -124,16 +126,15 @@ fn input_str_with_null_and_default<T: Display>(
     Ok(value)
 }
 
-fn input_use_history(default_flag: &Option<bool>) -> Result<Option<bool>, String> {
-    let default_flag = default_flag.unwrap_or(true);
+fn input_flag(default_flag: bool, message: &str) -> Result<Option<bool>, String> {
     let choices = if default_flag { "[Y/n]" } else { "[y/N]" };
 
-    let result = get_confirm(format!("use history {choices}: "), default_flag)?;
+    let result = get_confirm(format!("{message} {choices}: "), default_flag)?;
     if result.is_some() {
         Ok(result)
     } else {
         println!("\ninvalid input\n");
-        input_use_history(&Some(default_flag))
+        input_flag(default_flag, message)
     }
 }
 
