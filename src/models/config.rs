@@ -14,6 +14,8 @@ pub struct Profile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_history: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub use_pre_messages: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub model: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub temperature: Option<f32>,
@@ -100,6 +102,14 @@ impl Profile {
         }
 
         Ok(result)
+    }
+
+    pub fn get_use_pre_messages(&self) -> bool {
+        self.use_pre_messages.unwrap_or(true)
+    }
+
+    pub fn get_use_history(&self) -> bool {
+        self.use_history.unwrap_or(false)
     }
 }
 

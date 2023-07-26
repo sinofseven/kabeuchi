@@ -127,15 +127,15 @@ fn save_history(
 pub fn call_chat_completion(profile: &Profile, message: &str) -> Result<(), String> {
     let mut messages = Vec::new();
 
-    let use_history = profile.use_history.unwrap_or(true);
+    if profile.get_use_pre_messages() {
+        let mut pre_messages = get_pre_messages(&profile.name)?
+            .iter()
+            .map(|m| m.into())
+            .collect();
+        messages.append(&mut pre_messages);
+    }
 
-    let mut pre_messages = get_pre_messages(&profile.name)?
-        .iter()
-        .map(|m| m.into())
-        .collect();
-    messages.append(&mut pre_messages);
-
-    if use_history {
+    if profile.get_use_history() {
         let mut histories = get_histories(&profile.name)?
             .iter()
             .map(|m| m.into())
@@ -204,7 +204,7 @@ pub fn call_chat_completion(profile: &Profile, message: &str) -> Result<(), Stri
     let response: ResponseChatCompletion =
         serde_json::from_str(&text).map_err(|e| format!("failed to deserialize json: {e}"))?;
 
-    if use_history {
+    if profile.get_use_history() {
         save_history(&profile.name, message, &response)?;
     }
 
