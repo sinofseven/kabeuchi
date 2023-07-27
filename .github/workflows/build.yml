@@ -104,7 +104,7 @@ jobs:
         with:
           key: cargo-${{ runner.os }}-${{ matrix.job.target }}-${{ hashFiles('**/Cargo.lock') }}-${{ env.RELEASE_FLAG }}
       - run: cargo build --locked --release --target=${{ matrix.job.target }}
-      - run: find target -type f | sort
+      - run: dir -s target
       - uses: actions/upload-artifact@v3
         with:
           name: binary-${{ matrix.job.target }}
